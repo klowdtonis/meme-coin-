@@ -1,0 +1,30 @@
+name: Meme Coin Scan
+
+on:
+  schedule:
+    # Läuft alle 15 Minuten (UTC-Zeit, GitHub kann die Ausführung
+    # gelegentlich um ein paar Minuten verzögern - das ist normal)
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    # Erlaubt zusätzlich manuelles Starten über den "Actions"-Tab
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Abhängigkeiten installieren
+        run: pip install python-telegram-bot requests
+
+      - name: Bot einmalig ausführen
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python bot.py --once
